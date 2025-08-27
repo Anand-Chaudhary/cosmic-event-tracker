@@ -59,7 +59,6 @@ export default function HomePage() {
           onClose={() => setSelectedNeoForModal(null)}
         />
       )}
-
       <NeoToolbar onCompare={handleCompare} onLogout={handleLogout} disableCompare={Object.keys(selectedNeos).length === 0} />
 
       <NeoDateRangePicker today={today} maxEndDate={maxEndDate} onUpdateRange={fetchData} />

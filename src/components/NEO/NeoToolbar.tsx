@@ -9,7 +9,7 @@ interface NeoToolbarProps {
 export default function NeoToolbar({ onCompare, onLogout, disableCompare }: NeoToolbarProps) {
   return (
     <div className="flex justify-between items-center mb-4">
-      <h1 className="text-2xl font-bold">Near Earth Objects</h1>
+      <h1 className="text-2xl font-bold">Near Earth Objects - Developed by Anand Chaudhary</h1>
       <div className="flex gap-2">
         <button
           onClick={onCompare}
