@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/store/authStore';
 import supabase from '@/lib/supabase';
+import AuthRedirect from '@/components/AuthRedirect';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const { setUser, setSession } = useAuthStore();
@@ -18,5 +19,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     return () => subscription.unsubscribe();
   }, [setUser, setSession, router]);
 
-  return <>{children}</>;
+  return (
+    <>
+      <AuthRedirect />
+      {children}
+    </>
+  );
 }

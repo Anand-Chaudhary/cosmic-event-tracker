@@ -11,10 +11,4 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   }
 });
 
-// Add this for debugging
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth event:', event);
-  console.log('Session:', session);
-});
-
 export default supabase;

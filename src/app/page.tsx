@@ -1,106 +1,80 @@
-import ProtectedRoute from "@/components/ProtectedRoute";
-import Image from "next/image";
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useNeoStore } from "@/store/neoStore";
+import useAuthStore from "@/store/authStore";
+import { NearEarthObject } from "@/types/nasa.types";
+import NeoDetailModal from "./(app)/event/[id]/page";
+import NeoDateRangePicker from "@/components/NEO/NeoDateRangePicker";
+import NeoToolbar from "@/components/NEO/NeoToolbar";
+import NeoTable from "@/components/NEO/NeoTable";
 
-export default function Home() {
+export default function HomePage() {
+  const router = useRouter();
+  const { data, loading, error, fetchData } = useNeoStore();
+  const { user } = useAuthStore();
+  const [selectedNeos, setSelectedNeos] = useState<Record<string, NearEarthObject>>({});
+  const [selectedNeoForModal, setSelectedNeoForModal] = useState<NearEarthObject | null>(null);
+
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+  const today = formatDate(new Date());
+  const maxEndDate = formatDate(new Date(Date.now() + 6 * 24 * 60 * 60 * 1000));
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    if (!data) fetchData(today, maxEndDate);
+  }, [user, router, data, fetchData, today, maxEndDate]);
+
+  const handleSelect = (neo: NearEarthObject, checked: boolean) => {
+    setSelectedNeos((prev) => {
+      const copy = { ...prev };
+      if (checked) copy[neo.id] = neo;
+      else delete copy[neo.id];
+      return copy;
+    });
+  };
+
+  const handleCompare = () => {
+    if (Object.keys(selectedNeos).length === 0) return;
+    sessionStorage.setItem("compareNeos", JSON.stringify(Object.values(selectedNeos)));
+    router.push("/compare");
+  };
+
+  const handleLogout = async () => {
+    const { signOut } = useAuthStore.getState();
+    await signOut();
+    router.push("/login");
+  };
+
   return (
-    <ProtectedRoute>
-      <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div className="p-6 relative">
+      {/* Modal */}
+      {selectedNeoForModal && (
+        <NeoDetailModal
+          neo={selectedNeoForModal}
+          isOpen={true}
+          onClose={() => setSelectedNeoForModal(null)}
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+      )}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <NeoToolbar onCompare={handleCompare} onLogout={handleLogout} disableCompare={Object.keys(selectedNeos).length === 0} />
+
+      <NeoDateRangePicker today={today} maxEndDate={maxEndDate} onUpdateRange={fetchData} />
+
+      {loading && <p className="text-gray-500">Loading NEO data...</p>}
+      {error && <p className="text-red-600">Error: {error}</p>}
+
+      {data && (
+        <NeoTable
+          data={data.near_earth_objects}
+          selectedNeos={selectedNeos}
+          onSelect={handleSelect}
+          onDetails={setSelectedNeoForModal}
+        />
+      )}
     </div>
-    </ProtectedRoute>
   );
 }

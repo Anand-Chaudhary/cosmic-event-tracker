@@ -46,6 +46,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
         }
         router.push('/');
       }
+      //eslint-disable-next-line
     } catch (err: any) {
       setError(err.message || 'An error occurred');
     }
@@ -152,7 +153,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
             </p>
           ) : (
             <p className='text-black'>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
                 Sign up
               </Link>

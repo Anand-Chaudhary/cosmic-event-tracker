@@ -47,6 +47,7 @@ const useAuthStore = create<AuthState>((set) => ({
         error: null
       });
       return { error: null };
+      //eslint-disable-next-line
     } catch (error: any) {
       const errorMessage = error.error_description || error.message || 'Error signing up';
       set({ error: errorMessage, loading: false });
@@ -74,6 +75,7 @@ const useAuthStore = create<AuthState>((set) => ({
         error: null
       });
       return { error: null };
+      //eslint-disable-next-line
     } catch (error: any) {
       const errorMessage = error.error_description || error.message || 'Error signing in';
       set({ error: errorMessage, loading: false });
@@ -93,6 +95,7 @@ const useAuthStore = create<AuthState>((set) => ({
         loading: false,
         error: null
       });
+      //eslint-disable-next-line
     } catch (error: any) {
       set({ 
         error: error.message || 'Error signing out',
