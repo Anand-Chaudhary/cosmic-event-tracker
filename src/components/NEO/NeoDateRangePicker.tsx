@@ -4,12 +4,13 @@ import { useState } from "react";
 interface NeoDateRangePickerProps {
   today: string;
   maxEndDate: string;
-  onUpdateRange: (start: string, end: string) => void;
+  onUpdateRange: (start: string, end: string, minDiameter: number) => void;
 }
 
 export default function NeoDateRangePicker({ today, maxEndDate, onUpdateRange }: NeoDateRangePickerProps) {
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(maxEndDate);
+  const [minDiameter, setMinDiameter] = useState<string>('');
   const [dateError, setDateError] = useState("");
 
   const formatDate = (date: Date) => date.toISOString().split("T")[0];
@@ -50,7 +51,16 @@ export default function NeoDateRangePicker({ today, maxEndDate, onUpdateRange }:
       setDateError("Date range cannot exceed 7 days");
       return;
     }
-    onUpdateRange(startDate, endDate);
+    const diameter = minDiameter ? parseFloat(minDiameter) : 0;
+    onUpdateRange(startDate, endDate, diameter);
+  };
+
+  const handleDiameterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow numbers and decimal point
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      setMinDiameter(value);
+    }
   };
 
   return (
@@ -70,9 +80,20 @@ export default function NeoDateRangePicker({ today, maxEndDate, onUpdateRange }:
             className="p-2 border border-gray-300 rounded-md"
           />
         </div>
+        <div className="flex flex-col">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Min Diameter (km)</label>
+          <input
+            type="text"
+            value={minDiameter}
+            onChange={handleDiameterChange}
+            placeholder="0"
+            className="p-2 border border-gray-300 rounded-md w-32"
+            inputMode="decimal"
+          />
+        </div>
         <button
           onClick={handleSubmit}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors h-10 self-end"
         >
           Update Range
         </button>
